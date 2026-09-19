@@ -7,8 +7,7 @@ using Testcontainers.MsSql;
 
 namespace EmployeeManagement.IntegrationTests;
 
-// Runs the API against a real SQL Server in a throwaway container, so tests exercise the same
-// provider, migrations and constraints (e.g. the unique email index) as the running application.
+// Real SQL Server in a container, so tests hit the same migrations and constraints as production.
 public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly MsSqlContainer _dbContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
@@ -16,7 +15,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // A dedicated environment keeps Development-only behaviour (user secrets, auto-migration) out of tests.
+        // Not Development: keeps user secrets and auto-migration out of tests.
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:Default", _dbContainer.GetConnectionString());
     }
