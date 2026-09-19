@@ -1,3 +1,5 @@
+using EmployeeManagement.Application.Employees;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -7,9 +9,9 @@ public static class ApplicationServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        // Business rules like "HireDate cannot be in the future" depend on the current time;
-        // injecting TimeProvider lets tests substitute a fixed clock.
         services.TryAddSingleton(TimeProvider.System);
+        services.AddValidatorsFromAssembly(typeof(ApplicationServiceCollectionExtensions).Assembly);
+        services.AddScoped<EmployeeService>();
 
         return services;
     }

@@ -1,6 +1,84 @@
-@EmployeeManagement.Api_HostAddress = http://localhost:5281
+@host = http://localhost:5281
+# Docker compose exposes the API on http://localhost:8080 instead.
 
-GET {{EmployeeManagement.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Create an employee -> 201 + Location header
+POST {{host}}/employee
+Content-Type: application/json
 
-###
+{
+  "name": "Jane Doe",
+  "hireDate": "2023-04-17",
+  "email": "jane.doe@example.com",
+  "phoneNo": "+1 (555) 010-1234",
+  "profilePicture": "https://example.com/jane.jpg",
+  "status": "active",
+  "address": "1 Main Street",
+  "state": "Massachusetts",
+  "country": "USA",
+  "city": "Boston",
+  "pincode": "02101"
+}
+
+### Invalid input (future date, bad phone, unknown status, javascript: URL) -> 400 with per-field errors
+POST {{host}}/employee
+Content-Type: application/json
+
+{
+  "name": "  ",
+  "hireDate": "2999-01-01",
+  "email": "not-an-email",
+  "phoneNo": "12345",
+  "profilePicture": "javascript:alert(1)",
+  "status": "unknown",
+  "address": "1 Main Street",
+  "state": "Massachusetts",
+  "country": "USA",
+  "city": "Boston",
+  "pincode": "02101"
+}
+
+### Same email again (case does not matter) -> 409
+POST {{host}}/employee
+Content-Type: application/json
+
+{
+  "name": "Someone Else",
+  "hireDate": "2023-04-17",
+  "email": "JANE.DOE@example.com",
+  "phoneNo": "+15550101234",
+  "status": "inactive",
+  "address": "2 Side Street",
+  "state": "Massachusetts",
+  "country": "USA",
+  "city": "Boston",
+  "pincode": "02101"
+}
+
+### Get by id (replace the id with the one from the Location header) -> 200, unknown id -> 404
+GET {{host}}/employee/00000000-0000-0000-0000-000000000001
+
+### List with paging and search -> 200
+GET {{host}}/employees?page=1&pageSize=10&search=jane
+
+### Invalid paging -> 400
+GET {{host}}/employees?page=0&pageSize=1000
+
+### Update (full replacement) -> 200 / 400 / 404 / 409
+PUT {{host}}/employee/00000000-0000-0000-0000-000000000001
+Content-Type: application/json
+
+{
+  "name": "Jane Doe-Smith",
+  "hireDate": "2023-04-17",
+  "email": "jane.doe@example.com",
+  "phoneNo": "+15550101234",
+  "status": "inactive",
+  "address": "1 Main Street",
+  "state": "Massachusetts",
+  "country": "USA",
+  "city": "Boston",
+  "pincode": "02101"
+}
+
+### Delete -> 204, unknown id -> 404
+DELETE {{host}}/employee/00000000-0000-0000-0000-000000000001

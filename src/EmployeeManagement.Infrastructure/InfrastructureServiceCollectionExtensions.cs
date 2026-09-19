@@ -13,7 +13,9 @@ public static class InfrastructureServiceCollectionExtensions
         var connectionString = configuration.GetConnectionString("Default")
             ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
 
-        services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(connectionString, sql =>
+                sql.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null)));
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
         return services;
