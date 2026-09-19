@@ -1,3 +1,4 @@
+using EmployeeManagement.Application.Employees;
 using EmployeeManagement.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@ public static class InfrastructureServiceCollectionExtensions
             ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
 
         services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
         return services;
     }
