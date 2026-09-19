@@ -1,3 +1,4 @@
+using System.Text.Json;
 using EmployeeManagement.Application.Common.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
@@ -64,9 +65,6 @@ public sealed class ApiExceptionHandler(
 
     private static Dictionary<string, string[]> ToErrors(ValidationException exception) =>
         exception.Errors
-            .GroupBy(e => JsonName(e.PropertyName))
-            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).Distinct().ToArray());
-
-    private static string JsonName(string propertyName) =>
-        propertyName.Length == 0 ? propertyName : char.ToLowerInvariant(propertyName[0]) + propertyName[1..];
+            .GroupBy(e => JsonNamingPolicy.CamelCase.ConvertName(e.PropertyName))
+            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 }

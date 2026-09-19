@@ -272,11 +272,29 @@ public class EmployeesEndpointsTests(ApiFactory factory) : IClassFixture<ApiFact
     }
 
     [Fact]
-    public async Task Get_Employees_SearchWithWildcardCharacters_IsTreatedLiterally()
+    public async Task Get_Employees_Search_IsCaseInsensitive()
     {
-        await CreateAsync($"{UniqueToken()}@example.com");
+        var token = UniqueToken();
+        await CreateAsync($"{token}@example.com", name: $"Jane {token}");
 
-        var result = await _client.GetFromJsonAsync<PagedResult<EmployeeResponse>>("/employees?search=%25");
+        var result = await _client.GetFromJsonAsync<PagedResult<EmployeeResponse>>(
+            $"/employees?search=JANE%20{token.ToUpperInvariant()}");
+
+        Assert.Equal(1, result!.TotalCount);
+    }
+
+    // Each pattern would match "ab{token}" if the character were interpreted as a LIKE wildcard.
+    [Theory]
+    [InlineData("a%")]
+    [InlineData("a_")]
+    [InlineData("a[b]")]
+    public async Task Get_Employees_SearchWithWildcardCharacters_IsTreatedLiterally(string prefix)
+    {
+        var token = UniqueToken();
+        await CreateAsync($"{token}@example.com", name: $"ab{token}");
+
+        var result = await _client.GetFromJsonAsync<PagedResult<EmployeeResponse>>(
+            $"/employees?search={Uri.EscapeDataString(prefix + token)}");
 
         Assert.Equal(0, result!.TotalCount);
     }

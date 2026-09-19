@@ -12,20 +12,9 @@ internal sealed class FakeEmployeeRepository : IEmployeeRepository
     public Task<Employee?> GetByIdAsync(Guid id, CancellationToken ct) =>
         Task.FromResult(_employees.FirstOrDefault(e => e.Id == id));
 
-    public Task<(IReadOnlyList<Employee> Items, int TotalCount)> ListAsync(EmployeeListQuery query, CancellationToken ct)
-    {
-        var matching = _employees
-            .Where(e => string.IsNullOrEmpty(query.Search)
-                || e.Name.Contains(query.Search, StringComparison.OrdinalIgnoreCase)
-                || e.Email.Contains(query.Search, StringComparison.OrdinalIgnoreCase)
-                || e.City.Contains(query.Search, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(e => e.Name)
-            .ThenBy(e => e.Id)
-            .ToList();
-
-        IReadOnlyList<Employee> page = matching.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToList();
-        return Task.FromResult((page, matching.Count));
-    }
+    // Search and paging run in SQL, so they are covered by the integration tests instead.
+    public Task<(IReadOnlyList<Employee> Items, int TotalCount)> ListAsync(EmployeeListQuery query, CancellationToken ct) =>
+        throw new NotSupportedException();
 
     public Task<bool> EmailExistsAsync(string email, Guid? excludeId, CancellationToken ct) =>
         Task.FromResult(_employees.Any(e =>
