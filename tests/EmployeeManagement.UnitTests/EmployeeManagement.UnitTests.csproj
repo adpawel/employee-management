@@ -8,6 +8,7 @@
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,6 +23,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\EmployeeManagement.Domain\EmployeeManagement.Domain.csproj" />
     <ProjectReference Include="..\..\src\EmployeeManagement.Application\EmployeeManagement.Application.csproj" />
+    <!-- Only for the CSV parser tests; they do not touch the database. -->
+    <ProjectReference Include="..\..\src\EmployeeManagement.Infrastructure\EmployeeManagement.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

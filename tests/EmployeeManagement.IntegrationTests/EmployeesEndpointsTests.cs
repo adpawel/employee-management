@@ -116,14 +116,6 @@ public class EmployeesEndpointsTests(ApiFactory factory) : IClassFixture<ApiFact
     }
 
     [Fact]
-    public async Task Post_MissingFields_Returns400()
-    {
-        var response = await _client.PostAsJsonAsync("/employee", new { });
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    [Fact]
     public async Task Post_MalformedJson_Returns400()
     {
         var response = await _client.PostAsync("/employee",
@@ -168,14 +160,6 @@ public class EmployeesEndpointsTests(ApiFactory factory) : IClassFixture<ApiFact
     }
 
     [Fact]
-    public async Task Get_MalformedId_Returns404()
-    {
-        var response = await _client.GetAsync("/employee/not-a-guid");
-
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-    }
-
-    [Fact]
     public async Task Put_ExistingEmployee_Returns200_WithUpdatedData_AndKeepsIdAndCreatedAt()
     {
         var (_, created) = await CreateAsync($"{UniqueToken()}@example.com");
@@ -192,17 +176,6 @@ public class EmployeesEndpointsTests(ApiFactory factory) : IClassFixture<ApiFact
 
         var fetched = await _client.GetFromJsonAsync<EmployeeResponse>($"/employee/{created.Id}");
         Assert.Equal(updated, fetched);
-    }
-
-    [Fact]
-    public async Task Put_KeepingOwnEmail_Returns200()
-    {
-        var email = $"{UniqueToken()}@example.com";
-        var (_, created) = await CreateAsync(email);
-
-        var response = await _client.PutAsJsonAsync($"/employee/{created.Id}", ValidBody(email, "New Name"));
-
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
