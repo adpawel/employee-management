@@ -10,6 +10,8 @@ public interface IEmployeeRepository
 
     Task<bool> EmailExistsAsync(string email, Guid? excludeId, CancellationToken ct);
 
+    Task<IReadOnlyList<string>> GetExistingEmailsAsync(IReadOnlyCollection<string> emails, CancellationToken ct);
+
     void Add(Employee employee);
 
     void Remove(Employee employee);
