@@ -1,4 +1,4 @@
-using EmployeeManagement.Api.Data;
+using EmployeeManagement.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Api.Controllers;
