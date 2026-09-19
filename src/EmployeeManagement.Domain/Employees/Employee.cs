@@ -20,8 +20,6 @@ public sealed class Employee
     public string Pincode { get; private set; } = null!;
     public DateTimeOffset CreatedAt { get; private set; }
 
-    // Values are expected to be validated in the Application layer before reaching the entity.
-    // Id and CreatedAt are always system-generated, never taken from client input.
     public static Employee Create(
         string name,
         DateOnly hireDate,
@@ -38,8 +36,7 @@ public sealed class Employee
     {
         return new Employee
         {
-            // Ids are exposed in URLs, so they must not be predictable: a random (v4) GUID
-            // rules out enumerating employees, unlike sequential ints or NEWSEQUENTIALID().
+            // Random v4: ids appear in URLs, so they must not be guessable or enumerable.
             Id = Guid.NewGuid(),
             Name = name,
             HireDate = hireDate,
@@ -54,5 +51,31 @@ public sealed class Employee
             Pincode = pincode,
             CreatedAt = createdAt
         };
+    }
+
+    public void Update(
+        string name,
+        DateOnly hireDate,
+        string email,
+        string phoneNo,
+        string? profilePictureUrl,
+        EmployeeStatus status,
+        string address,
+        string state,
+        string country,
+        string city,
+        string pincode)
+    {
+        Name = name;
+        HireDate = hireDate;
+        Email = email;
+        PhoneNo = phoneNo;
+        ProfilePictureUrl = profilePictureUrl;
+        Status = status;
+        Address = address;
+        State = state;
+        Country = country;
+        City = city;
+        Pincode = pincode;
     }
 }
