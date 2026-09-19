@@ -22,7 +22,6 @@ internal class EmployeeRepository(AppDbContext db) : IEmployeeRepository
 
         if (!string.IsNullOrEmpty(query.Search))
         {
-            // Wildcards in the input are escaped; case-insensitivity comes from the DB collation.
             var search = query.Search;
             employees = employees.Where(e =>
                 e.Name.Contains(search) || e.Email.Contains(search) || e.City.Contains(search));
@@ -44,6 +43,17 @@ internal class EmployeeRepository(AppDbContext db) : IEmployeeRepository
     public Task<bool> EmailExistsAsync(string email, Guid? excludeId, CancellationToken ct) =>
         db.Employees.AnyAsync(e => e.Email == email && e.Id != excludeId, ct);
 
+    public async Task<IReadOnlyList<string>> GetExistingEmailsAsync(IReadOnlyCollection<string> emails, CancellationToken ct)
+    {
+        var candidates = emails.ToArray();
+
+        return await db.Employees
+            .AsNoTracking()
+            .Where(e => candidates.Contains(e.Email))
+            .Select(e => e.Email)
+            .ToListAsync(ct);
+    }
+
     public void Add(Employee employee) => db.Employees.Add(employee);
 
     public void Remove(Employee employee) => db.Employees.Remove(employee);
@@ -59,7 +69,6 @@ internal class EmployeeRepository(AppDbContext db) : IEmployeeRepository
             Number: UniqueIndexViolation or UniqueConstraintViolation
         })
         {
-            // Email is the only unique index, so this is a concurrent duplicate email.
             throw new ConflictException("An employee with this email already exists.", ex);
         }
     }

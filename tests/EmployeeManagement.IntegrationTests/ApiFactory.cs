@@ -15,7 +15,6 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // Not Development: keeps user secrets and auto-migration out of tests.
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:Default", _dbContainer.GetConnectionString());
     }

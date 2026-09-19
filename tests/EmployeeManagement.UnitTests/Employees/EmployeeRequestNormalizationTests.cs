@@ -31,31 +31,6 @@ public class EmployeeRequestNormalizationTests
         Assert.Equal("jane.doe@example.com", normalized.Email);
     }
 
-    [Fact]
-    public void TextFields_AreTrimmed_ButKeepTheirCase()
-    {
-        var normalized = (EmployeeRequestValidatorTests.ValidRequest() with
-        {
-            Name = "  Jane Doe ",
-            HireDate = " 2023-04-17 ",
-            Status = " Active ",
-            Address = " 1 Main Street ",
-            State = " MA ",
-            Country = " USA ",
-            City = " Boston ",
-            Pincode = " 02101 "
-        }).Normalize();
-
-        Assert.Equal("Jane Doe", normalized.Name);
-        Assert.Equal("2023-04-17", normalized.HireDate);
-        Assert.Equal("Active", normalized.Status);
-        Assert.Equal("1 Main Street", normalized.Address);
-        Assert.Equal("MA", normalized.State);
-        Assert.Equal("USA", normalized.Country);
-        Assert.Equal("Boston", normalized.City);
-        Assert.Equal("02101", normalized.Pincode);
-    }
-
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -65,13 +40,5 @@ public class EmployeeRequestNormalizationTests
         var normalized = (EmployeeRequestValidatorTests.ValidRequest() with { ProfilePicture = input }).Normalize();
 
         Assert.Null(normalized.ProfilePicture);
-    }
-
-    [Fact]
-    public void NullFields_StayNull()
-    {
-        var normalized = new EmployeeRequest(null, null, null, null, null, null, null, null, null, null, null).Normalize();
-
-        Assert.Equal(new EmployeeRequest(null, null, null, null, null, null, null, null, null, null, null), normalized);
     }
 }

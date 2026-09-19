@@ -82,3 +82,14 @@ Content-Type: application/json
 
 ### Delete -> 204, unknown id -> 404
 DELETE {{host}}/employee/00000000-0000-0000-0000-000000000001
+
+### Bulk import from CSV -> 200 with a per-row report
+POST {{host}}/employees/bulk
+Content-Type: multipart/form-data; boundary=EmployeeImportBoundary
+
+--EmployeeImportBoundary
+Content-Disposition: form-data; name="file"; filename="employees_sample.csv"
+Content-Type: text/csv
+
+< ../../data/employees_sample.csv
+--EmployeeImportBoundary--

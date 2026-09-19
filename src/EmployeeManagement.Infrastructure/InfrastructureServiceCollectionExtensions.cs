@@ -1,4 +1,5 @@
 using EmployeeManagement.Application.Employees;
+using EmployeeManagement.Infrastructure.Csv;
 using EmployeeManagement.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ public static class InfrastructureServiceCollectionExtensions
             options.UseSqlServer(connectionString, sql =>
                 sql.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null)));
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddSingleton<IEmployeeCsvReader, EmployeeCsvReader>();
 
         return services;
     }

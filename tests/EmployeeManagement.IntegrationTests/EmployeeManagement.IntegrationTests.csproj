@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\data\employees_sample.csv" Link="Data\employees_sample.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\EmployeeManagement.Api\EmployeeManagement.Api.csproj" />
   </ItemGroup>
 
