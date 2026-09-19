@@ -6,7 +6,7 @@ public interface IEmployeeRepository
 {
     Task<Employee?> GetByIdAsync(Guid id, CancellationToken ct);
 
-    Task<IReadOnlyList<Employee>> ListAsync(CancellationToken ct);
+    Task<(IReadOnlyList<Employee> Items, int TotalCount)> ListAsync(EmployeeListQuery query, CancellationToken ct);
 
     Task<bool> EmailExistsAsync(string email, Guid? excludeId, CancellationToken ct);
 
