@@ -21,8 +21,11 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             "CK_Employees_Status",
             $"[Status] IN ('{EmployeeStatus.Active}', '{EmployeeStatus.Inactive}')"));
 
-        builder.HasKey(e => e.Id);
+        // A random GUID as the clustered key would insert rows at random pages and cause page splits.
+        // The table is clustered by insertion time instead; the GUID stays the (non-clustered) primary key.
+        builder.HasKey(e => e.Id).IsClustered(false);
         builder.Property(e => e.Id).ValueGeneratedNever();
+        builder.HasIndex(e => e.CreatedAt).IsClustered();
 
         builder.Property(e => e.Name).HasMaxLength(NameMaxLength).IsRequired();
         builder.Property(e => e.HireDate).IsRequired();

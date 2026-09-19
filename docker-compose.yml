@@ -3,9 +3,10 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env (copy .env.example)}
     ports:
-      - "1433:1433"
+      # Bound to localhost only, so the database is not reachable from the network.
+      - "127.0.0.1:1433:1433"
     volumes:
       - mssql-data:/var/opt/mssql
     healthcheck:
@@ -14,6 +15,19 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
+
+  api:
+    build: .
+    environment:
+      # Development enables applying migrations on startup and the OpenAPI document.
+      ASPNETCORE_ENVIRONMENT: Development
+      # The password is read from .env only, so it is never committed.
+      ConnectionStrings__Default: "Server=db,1433;Database=EmployeeManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env (copy .env.example)};TrustServerCertificate=True"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   mssql-data:

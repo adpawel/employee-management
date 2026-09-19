@@ -38,8 +38,9 @@ public sealed class Employee
     {
         return new Employee
         {
-            // Version 7 GUIDs are unguessable like v4 but time-ordered, which keeps the clustered index from fragmenting.
-            Id = Guid.CreateVersion7(createdAt),
+            // Ids are exposed in URLs, so they must not be predictable: a random (v4) GUID
+            // rules out enumerating employees, unlike sequential ints or NEWSEQUENTIALID().
+            Id = Guid.NewGuid(),
             Name = name,
             HireDate = hireDate,
             Email = email,
