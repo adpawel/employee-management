@@ -9,7 +9,7 @@ Requires Docker.
 
 ```bash
 cp .env.example .env     # set MSSQL_SA_PASSWORD (any strong password)
-docker compose up -build
+docker compose up --build
 ```
 
 Open <http://localhost:8080> - it redirects to Swagger UI, where every endpoint can be tried out.
