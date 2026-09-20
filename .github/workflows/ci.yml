@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - run: dotnet restore
+
+      # Warnings are errors (Directory.Build.props), so this also guards code quality.
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      # Integration tests start SQL Server through Testcontainers; the runner ships with Docker,
+      # and the container password is generated, so no secrets are needed.
+      - name: Test
+        run: dotnet test --no-build -c Release
+
+      # The same image docker compose builds, so a broken Dockerfile fails here instead of on a clean clone.
+      - name: Build API image
+        run: docker build .
