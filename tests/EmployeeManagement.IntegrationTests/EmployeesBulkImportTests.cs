@@ -99,6 +99,15 @@ public class EmployeesBulkImportTests(ApiFactory factory) : IClassFixture<ApiFac
     }
 
     [Fact]
+    public async Task RequestWithoutBody_Returns400_NotTooLarge()
+    {
+        // A missing Content-Length must not be mistaken for an oversized request.
+        var response = await _client.PostAsync("/employees/bulk", null);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task MissingColumns_Returns400_WithFileError()
     {
         var errors = await ReadProblemErrorsAsync(await UploadAsync("Name,Email\nJane,jane@example.com"));
