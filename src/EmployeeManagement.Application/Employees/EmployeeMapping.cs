@@ -18,4 +18,44 @@ internal static class EmployeeMapping
         employee.City,
         employee.Pincode,
         employee.CreatedAt);
+
+    public static Employee ToEmployee(this EmployeeRequest request, DateTimeOffset createdAt) => Employee.Create(
+        request.Name!,
+        ParseHireDate(request.HireDate),
+        request.Email!,
+        request.PhoneNo!,
+        request.ProfilePicture,
+        ParseStatus(request.Status),
+        request.Address!,
+        request.State!,
+        request.Country!,
+        request.City!,
+        request.Pincode!,
+        createdAt);
+
+    // PUT is a full replacement, so every editable field is overwritten; Id and CreatedAt stay untouched.
+    public static void ApplyTo(this EmployeeRequest request, Employee employee) => employee.Update(
+        request.Name!,
+        ParseHireDate(request.HireDate),
+        request.Email!,
+        request.PhoneNo!,
+        request.ProfilePicture,
+        ParseStatus(request.Status),
+        request.Address!,
+        request.State!,
+        request.Country!,
+        request.City!,
+        request.Pincode!);
+
+    private static DateOnly ParseHireDate(string? hireDate)
+    {
+        EmployeeRequest.TryParseHireDate(hireDate, out var date);
+        return date;
+    }
+
+    private static EmployeeStatus ParseStatus(string? status)
+    {
+        EmployeeRequest.TryParseStatus(status, out var parsed);
+        return parsed;
+    }
 }

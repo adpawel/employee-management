@@ -19,7 +19,7 @@ public sealed class EmployeeService(
         var normalized = await NormalizeAndValidateAsync(request, ct);
         await EnsureEmailIsUniqueAsync(normalized.Email!, excludeId: null, ct);
 
-        var employee = ToEmployee(normalized);
+        var employee = normalized.ToEmployee(timeProvider.GetUtcNow());
 
         repository.Add(employee);
         await repository.SaveChangesAsync(ct);
@@ -48,18 +48,7 @@ public sealed class EmployeeService(
         var normalized = await NormalizeAndValidateAsync(request, ct);
         await EnsureEmailIsUniqueAsync(normalized.Email!, excludeId: id, ct);
 
-        employee.Update(
-            normalized.Name!,
-            ParseHireDate(normalized.HireDate),
-            normalized.Email!,
-            normalized.PhoneNo!,
-            normalized.ProfilePicture,
-            ParseStatus(normalized.Status),
-            normalized.Address!,
-            normalized.State!,
-            normalized.Country!,
-            normalized.City!,
-            normalized.Pincode!);
+        normalized.ApplyTo(employee);
 
         await repository.SaveChangesAsync(ct);
 
@@ -136,7 +125,7 @@ public sealed class EmployeeService(
                 continue;
             }
 
-            var employee = ToEmployee(request);
+            var employee = request.ToEmployee(timeProvider.GetUtcNow());
             repository.Add(employee);
             results.Add(new EmployeeImportRowResult(row, email, EmployeeImportRowResult.ImportedStatus, employee.Id, null));
         }
@@ -172,21 +161,6 @@ public sealed class EmployeeService(
         }
     }
 
-    // Expects a normalized, valid request.
-    private Employee ToEmployee(EmployeeRequest request) => Employee.Create(
-        request.Name!,
-        ParseHireDate(request.HireDate),
-        request.Email!,
-        request.PhoneNo!,
-        request.ProfilePicture,
-        ParseStatus(request.Status),
-        request.Address!,
-        request.State!,
-        request.Country!,
-        request.City!,
-        request.Pincode!,
-        timeProvider.GetUtcNow());
-
     // Same shape and camelCase keys as the 400 response produced by ApiExceptionHandler.
     private static Dictionary<string, string[]> ToErrors(IEnumerable<ValidationFailure> failures) =>
         failures
@@ -195,16 +169,4 @@ public sealed class EmployeeService(
 
     private static Dictionary<string, string[]> EmailError(string message) =>
         new() { [JsonNamingPolicy.CamelCase.ConvertName(nameof(EmployeeRequest.Email))] = [message] };
-
-    private static DateOnly ParseHireDate(string? hireDate)
-    {
-        EmployeeRequest.TryParseHireDate(hireDate, out var date);
-        return date;
-    }
-
-    private static EmployeeStatus ParseStatus(string? status)
-    {
-        EmployeeRequest.TryParseStatus(status, out var parsed);
-        return parsed;
-    }
 }

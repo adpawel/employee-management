@@ -13,7 +13,10 @@ public sealed class RejectOversizedRequestAttribute(long maxBytes) : Attribute, 
     public void OnResourceExecuting(ResourceExecutingContext context)
     {
         var httpContext = context.HttpContext;
-        if (httpContext.Request.ContentLength <= maxBytes)
+
+        // Only a known length that exceeds the limit is rejected here. A missing Content-Length (no body or a
+        // chunked upload) is not "too large": the body is then bounded by [RequestSizeLimit] instead.
+        if (httpContext.Request.ContentLength is not { } length || length <= maxBytes)
         {
             return;
         }
