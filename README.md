@@ -83,7 +83,7 @@ SQL Server orders `uniqueidentifier` by its last bytes, so a v7 timestamp prefix
 **Non-clustered primary key.** Random GUIDs as a clustered key cause page splits, so the table is clustered on `CreatedAt` instead.
 
 **Bulk import is partial, with a per-row report.** Employee rows are independent, so one bad row must not reject the rest -
-all-or-nothing would import 0 of the 10 sample rows. The response is always 200 when the file itself is valid (207 is a WebDAV status, not an HTTP one).
+all-or-nothing would import 0 of the 10 sample rows. The response is always 200 when the file itself is valid because each row is reported independently.
 
 **Two levels of import failures.** A problem with the file (missing column, unreadable CSV, no rows, more than 1000 rows) rejects
 the whole request with 400 or 413; a problem with a row (validation, duplicate inside the file, email already in the database)
