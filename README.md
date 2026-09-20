@@ -5,7 +5,8 @@ REST API for managing employees, including CSV bulk import.
 
 ## Run it
 
-Requires Docker.
+Requirements: **Docker** (with Compose) and free ports **8080** and **1433**.
+The **.NET 9 SDK** is only needed to run the tests or to start the API outside Docker.
 
 ```bash
 cp .env.example .env     # set MSSQL_SA_PASSWORD (any strong password)
@@ -69,7 +70,6 @@ The provided `data/employees_sample.csv` imports 6 of 10 rows; the other 4 are r
 - **SQL Server 2022** - relational data with a uniqueness constraint that has to hold under concurrency; also the database I use at work.
 - **Docker Compose for the database** - one command reproduces the same environment on any machine, with no local SQL Server install.
 - **EF Core, LINQ only** - queries are parameterized by the provider, so no user input is ever concatenated into SQL.
-- **FluentValidation** - validation rules live outside the DTO and read like the business rules they encode.
 - **xUnit, NSubstitute, Testcontainers** - fast unit tests against a mocked repository, plus integration tests against a real SQL Server in a container.
 
 ## Design decisions
@@ -108,6 +108,7 @@ absolute `http`/`https` URL (`javascript:` and `file:` URLs are rejected, since 
 I used **Claude Code** as the main tool, and **Gemini** to validate the approach at key decision points.
 AI wrote most of the code; I reviewed it and made the decisions that shape how the project works. What helped most was keeping a
 project context file with the decisions already made - beyond that, extra tooling would have been overkill at this scale.
+I also let **GitHub Copilot** review some pull requests as a second pair of eyes; its comments are treated as input, not verdicts.
 
 Things I changed or rejected:
 
