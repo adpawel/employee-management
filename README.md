@@ -1,6 +1,8 @@
 # Employee Management API
 
-REST API for managing employees, including CSV bulk import.
+Spent a 'few focused hours' to design an API. 
+
+This is REST API for managing employees, including CSV bulk import.
 .NET 9 · ASP.NET Core · EF Core · SQL Server 2022 · xUnit + Testcontainers.
 
 ## Run it
@@ -101,7 +103,7 @@ absolute `http`/`https` URL (`javascript:` and `file:` URLs are rejected, since 
 - **A more professional bulk import** - a queue with an import job and a status endpoint for large files, or a mode parameter
   to choose all-or-nothing instead of partial import. Neither was warranted at this scale.
 - **Logging** - structured logs for import outcomes and conflicts, with the `traceId` already returned in error responses used for correlation.
-- **Another pass over test coverage** - the suite covers the important cases deliberately, not exhaustively.
+- **Another pass over test coverage** - the suite covers the important cases deliberately. But actually [if you trust your code then why to write tests](https://www.reddit.com/r/ProgrammerHumor/comments/hdpn0p/you_only_write_tests_if_you_dont_trust_your_own/)?? :smirk:
 
 ## AI tool usage
 
@@ -118,3 +120,8 @@ Things I changed or rejected:
 - **NSubstitute instead of a hand-written fake repository**, which removed a test class we had to maintain ourselves.
 - **All mapping moved into one place** (`EmployeeMapping`), plus smaller refactors - mapping had been spread across the service,
   and a test now asserts every field with a distinct value, so swapping two fields of the same type fails the build.
+
+
+## Other comments
+Thank you for the opportunity to test my skills in building API from scratch in such a coding task.
+It would be great to have a possibility to deeply discuss it in the next stage!
